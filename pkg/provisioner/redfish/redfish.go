@@ -404,6 +404,7 @@ func (p *redfishProvisioner) UpdateHardwareState() (result provisioner.Result, e
 	if discoveredState != p.host.Status.PoweredOn {
 		p.log.Info("Updating Power Status to ", discoveredState)
 		p.host.Status.PoweredOn = discoveredState
+		result.RequeueAfter = powerRequeueDelay
 		result.Dirty = true
 	}
 
@@ -452,9 +453,13 @@ func (p *redfishProvisioner) Provision(hostconfigData provisioner.HostConfigData
 	nodestate := node["State"].(string)
 
 	switch nodestate {
-
+    case "new":
+		result.RequeueAfter = provisionRequeueDelay
+        result.Dirty = true
+		return
 	case "in-transition":
 		result.RequeueAfter = provisionRequeueDelay
+        result.Dirty = true
 		return
 	case "readywait":
 
@@ -469,6 +474,8 @@ func (p *redfishProvisioner) Provision(hostconfigData provisioner.HostConfigData
 		if err != nil {
 			return result, errors.Wrap(err, "failed to Update  user data")
 		}
+                result.Dirty = true
+		result.RequeueAfter = provisionRequeueDelay
 	case "userdataloaded":
 
 		//Make it state "Ready"
@@ -477,6 +484,8 @@ func (p *redfishProvisioner) Provision(hostconfigData provisioner.HostConfigData
 		if err != nil {
 			return result, errors.Wrap(err, "failed to set node to READY state")
 		}
+                result.Dirty = true
+		result.RequeueAfter = provisionRequeueDelay
 	case "setupreadywait":
 		//Make it state "setupready"
 		stateData := []byte("{ \"State\" : \"setupready\" }")
@@ -484,11 +493,13 @@ func (p *redfishProvisioner) Provision(hostconfigData provisioner.HostConfigData
 		if err != nil {
 			return result, errors.Wrap(err, "failed to set node to SETUPREADY state")
 		}
+                result.Dirty = true
 		result.RequeueAfter = provisionRequeueDelay
 
 	case "deploying":
 
 		result.RequeueAfter = provisionRequeueDelay
+                result.Dirty = true
 	case "deployed":
 		return
 	default:
