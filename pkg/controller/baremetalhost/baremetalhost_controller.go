@@ -49,11 +49,14 @@ const (
 var runInTestMode bool
 var runInDemoMode bool
 var maxConcurrentReconciles int = 3
+var runInRedfishMode bool
 
-func init() {
+uunc init() {
 	flag.BoolVar(&runInTestMode, "test-mode", false, "disable ironic communication")
 	flag.BoolVar(&runInDemoMode, "demo-mode", false,
 		"use the demo provisioner to set host states")
+        flag.BoolVar(&runInRedfishMode, "redfish-mode", false, "redfish mode")
+        flag.Parse()
 
 	if mcrEnv, ok := os.LookupEnv("BMO_CONCURRENCY"); ok {
 		mcr, err := strconv.Atoi(mcrEnv)
@@ -91,6 +94,10 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 	case runInDemoMode:
 		log.Info("USING DEMO MODE")
 		provisionerFactory = demo.New
+        case runInRedfishMode:
+             log.Info("USING REDFISH MODE")
+             provisionerFactory  =  redfish.New
+             redfish.LogStartup()
 	default:
 		provisionerFactory = ironic.New
 		ironic.LogStartup()
