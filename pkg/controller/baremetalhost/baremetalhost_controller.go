@@ -20,6 +20,7 @@ import (
 	"github.com/metal3-io/baremetal-operator/pkg/provisioner/demo"
 	"github.com/metal3-io/baremetal-operator/pkg/provisioner/fixture"
 	"github.com/metal3-io/baremetal-operator/pkg/provisioner/ironic"
+	"github.com/metal3-io/baremetal-operator/pkg/provisioner/redfish"
 	"github.com/metal3-io/baremetal-operator/pkg/utils"
 
 	"github.com/go-logr/logr"
@@ -51,7 +52,7 @@ var runInDemoMode bool
 var maxConcurrentReconciles int = 3
 var runInRedfishMode bool
 
-uunc init() {
+func init() {
 	flag.BoolVar(&runInTestMode, "test-mode", false, "disable ironic communication")
 	flag.BoolVar(&runInDemoMode, "demo-mode", false,
 		"use the demo provisioner to set host states")
