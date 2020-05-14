@@ -453,15 +453,18 @@ func (p *redfishProvisioner) Provision(hostconfigData provisioner.HostConfigData
 	nodestate := node["State"].(string)
 
 	switch nodestate {
-    case "new":
+	case "new":
+		p.log.Info("Node in  state ", p.status.ID, nodestate)
 		result.RequeueAfter = provisionRequeueDelay
-        result.Dirty = true
+		result.Dirty = true
 		return
 	case "in-transition":
+		p.log.Info("Node in  state ", p.status.ID, nodestate)
 		result.RequeueAfter = provisionRequeueDelay
-        result.Dirty = true
+		result.Dirty = true
 		return
 	case "readywait":
+		p.log.Info("Node in  state ", p.status.ID, nodestate)
 
 		// Collect the user data from the secrets and update the Node
 		userdata, err := hostconfigData.UserData()
@@ -474,9 +477,10 @@ func (p *redfishProvisioner) Provision(hostconfigData provisioner.HostConfigData
 		if err != nil {
 			return result, errors.Wrap(err, "failed to Update  user data")
 		}
-                result.Dirty = true
+		result.Dirty = true
 		result.RequeueAfter = provisionRequeueDelay
 	case "userdataloaded":
+		p.log.Info("Node in  state ", p.status.ID, nodestate)
 
 		//Make it state "Ready"
 		stateData := []byte("{ \"State\" : \"ready\" }")
@@ -484,25 +488,37 @@ func (p *redfishProvisioner) Provision(hostconfigData provisioner.HostConfigData
 		if err != nil {
 			return result, errors.Wrap(err, "failed to set node to READY state")
 		}
-                result.Dirty = true
+		result.Dirty = true
+		result.RequeueAfter = provisionRequeueDelay
+	case "ready":
+		result.Dirty = true
 		result.RequeueAfter = provisionRequeueDelay
 	case "setupreadywait":
+		p.log.Info("Node in  state ", p.status.ID, nodestate)
 		//Make it state "setupready"
 		stateData := []byte("{ \"State\" : \"setupready\" }")
 		err = CheckPutRequestToMetamorph(p.status.ID, stateData)
 		if err != nil {
 			return result, errors.Wrap(err, "failed to set node to SETUPREADY state")
 		}
-                result.Dirty = true
+		result.Dirty = true
 		result.RequeueAfter = provisionRequeueDelay
 
+	case "setupready":
+		p.log.Info("Node in  state ", p.status.ID, nodestate)
+
+		result.RequeueAfter = provisionRequeueDelay
+		result.Dirty = true
 	case "deploying":
+		p.log.Info("Node in  state ", p.status.ID, nodestate)
 
 		result.RequeueAfter = provisionRequeueDelay
-                result.Dirty = true
+		result.Dirty = true
 	case "deployed":
+		p.log.Info("Node in  state ", p.status.ID, nodestate)
 		return
 	default:
+		p.log.Info("Node in  state ", p.status.ID, nodestate)
 		err = errors.Wrap(err, "Node in failed state")
 	}
 
