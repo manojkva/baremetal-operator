@@ -5,8 +5,8 @@ resources:
 - ../namespace
 - ../rbac
 - ../crds
-- ../operator/ironic
+- ../operator/redfish
 configMapGenerator:
 - envs:
-  - redfish__bmo_configmap.env
+  - redfish_bmo_configmap.env
   name: redfish-bmo-configmap
