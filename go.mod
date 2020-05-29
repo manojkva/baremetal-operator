@@ -3,6 +3,7 @@ module github.com/metal3-io/baremetal-operator
 go 1.13
 
 require (
+	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
 	github.com/gin-gonic/gin v1.6.3 // indirect
 	github.com/go-logr/logr v0.1.0
 	github.com/go-openapi/spec v0.19.4

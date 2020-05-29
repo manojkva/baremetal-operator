@@ -14,6 +14,7 @@ import (
 	"github.com/go-logr/logr"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 
+	"github.com/ghodss/yaml"
 	metal3v1alpha1 "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	"github.com/metal3-io/baremetal-operator/pkg/bmc"
 	"github.com/metal3-io/baremetal-operator/pkg/provisioner"
@@ -471,9 +472,14 @@ func (p *redfishProvisioner) Provision(hostconfigData provisioner.HostConfigData
 		if err != nil {
 			return result, errors.Wrap(err, "could not retrieve user data")
 		}
+		//convert the yaml file to Json
+		userdataJSON, err := yaml.YAMLToJSON([]byte(userdata))
+		if err != nil {
+			return result, errors.Wrap(err, "YAML data corrupt. Could not convert YAML to JSON")
+		}
 
-		p.log.Info(userdata)
-		err = CheckPutRequestToMetamorph(p.status.ID, []byte(userdata))
+		p.log.Info(string(userdataJSON))
+		err = CheckPutRequestToMetamorph(p.status.ID, []byte(userdataJSON))
 		if err != nil {
 			return result, errors.Wrap(err, "failed to Update  user data")
 		}
