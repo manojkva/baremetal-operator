@@ -91,8 +91,8 @@ func (p *redfishProvisioner) createNodeInMetamorph() (string, error) {
 	password := p.bmcCreds.Password
 
 	crdinfoString := " { \"name\" : \"%v\"," +
-		" \"imageURL\" : \"%v\", " +
-		" \"checksumURL\" : \"%v\", " +
+		" \"ISOURL\" : \"%v\", " +
+		" \"ISOChecksum\" : \"%v\", " +
 		" \"IPMIUser\": \"%v\", " +
 		" \"IPMIPassword\" : \"%v\", " +
 		" \"IPMIIP\" : \"%v\", " +
