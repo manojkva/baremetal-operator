@@ -154,6 +154,7 @@ func New(host *metal3v1alpha1.BareMetalHost, bmcCreds bmc.Credentials, publisher
 func PutRequestToMetamorph(endpointURL string, data []byte) (map[string]interface{}, error) {
 	resultBody := make(map[string]interface{})
 	restyClient := resty.New()
+	restyClient.SetDebug(true)
 
 	resp, err := restyClient.R().EnableTrace().
 		SetHeader("Content-Type", "application/json").
@@ -182,6 +183,7 @@ func CheckPutRequestToMetamorph(nodeUUID string, data []byte) (err error) {
 func PostRequestToMetamorph(endpointURL string, data []byte) (map[string]interface{}, error) {
 	resultBody := make(map[string]interface{})
 	restyClient := resty.New()
+	restyClient.SetDebug(true)
 
 	resp, err := restyClient.R().EnableTrace().
 		SetHeader("Content-Type", "application/json").
@@ -199,6 +201,7 @@ func PostRequestToMetamorph(endpointURL string, data []byte) (map[string]interfa
 func GetRequestToMetamorph(endpointURL string) (map[string]interface{}, error) {
 	resultBody := make(map[string]interface{})
 	restyClient := resty.New()
+	restyClient.SetDebug(true)
 
 	resp, err := restyClient.R().EnableTrace().Get(endpointURL)
 
@@ -213,6 +216,7 @@ func GetRequestToMetamorph(endpointURL string) (map[string]interface{}, error) {
 func DeleteRequestToMetamorph(endpointURL string) (map[string]interface{}, error) {
 	resultBody := make(map[string]interface{})
 	restyClient := resty.New()
+	restyClient.SetDebug(true)
 
 	resp, err := restyClient.R().EnableTrace().Delete(endpointURL)
 
@@ -567,7 +571,7 @@ func (p *redfishProvisioner) Delete() (result provisioner.Result, err error) {
 	}
 
 	//What are the states to be handled.
-	resp, err := DeleteRequestToMetamorph(metamorphEndpoint + p.status.ID)
+	resp, err := DeleteRequestToMetamorph(metamorphEndpoint + fmt.Sprintf("node/%v", p.status.ID))
 	if err != nil {
 		return result, err
 	}
